@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication03.adapter.PhotoAdapter
 import com.example.myapplication03.api.RetrofitAPIHandler
+import com.example.myapplication03.database.AppDatabase
 import com.example.myapplication03.database.Photo
 import com.example.myapplication03.databinding.FragmentFirstBinding
 import com.google.android.material.snackbar.Snackbar
@@ -49,6 +50,13 @@ class FirstFragment : Fragment() {
         photos.enqueue(object : Callback<List<Photo>>{
             override fun onResponse(call: Call<List<Photo>>, response: Response<List<Photo>>) {
                 val photoBody = response.body()
+
+                //save
+                val db = AppDatabase.getDatabase(view.context)
+                photoBody?.forEach{
+                    db.photoDao().insertPhoto(it)
+                }
+
                 val adapter = PhotoAdapter(photoBody!!,this,{position -> onListItemClick(position)})
                 binding.recyclerView.adapter = adapter
             }
